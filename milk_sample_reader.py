@@ -2,15 +2,15 @@ import csv
 from typing import List
 from milk_sample import MilkSample
 
+
+# Author information
+AUTHOR_NAME = "Himanish Rishi"
 class MilkSampleReader:
-    def __init__(self, filename: str = "nms_strontium90_milk_ssn_strontium90_lait (1).csv"):
+    def __init__(self):
         """
-        Initialize the MilkSampleReader with the CSV file path.
-        
-        Args:
-            filename (str): Path to the CSV file containing milk sample data
+        Initialize the MilkSampleReader with a hardcoded CSV file path.
         """
-        self.filename = filename
+        self.filename = 'nms_strontium90_milk_ssn_strontium90_lait.csv'
         self.samples: List[MilkSample] = []
 
     def read_samples(self, num_samples: int = 5) -> List[MilkSample]:
@@ -28,16 +28,17 @@ class MilkSampleReader:
             ValueError: If there's an error parsing the data
         """
         try:
-            with open(self.filename, 'r', encoding='utf-8') as file:
+            with open(self.filename, "r", encoding="utf-8-sig", errors='ignore') as f:
+                csv_reader = csv.reader(f)
                 # Skip header row
-                next(file)
+                next(csv_reader)
                 
                 # Read specified number of records
                 for _ in range(num_samples):
                     try:
-                        line = next(file)
-                        # Split the line and remove any empty fields
-                        values = [v.strip() for v in line.split(',') if v.strip()]
+                        values = next(csv_reader)
+                        # Remove any empty fields
+                        values = [v.strip() for v in values if v.strip()]
                         
                         if len(values) >= 9:
                             # Create a new MilkSample object
@@ -56,7 +57,7 @@ class MilkSampleReader:
                     except StopIteration:
                         break
                     except (ValueError, IndexError) as e:
-                        print(f"Error parsing line: {line}")
+                        print(f"Error parsing line: {values}")
                         print(f"Error details: {str(e)}")
                         continue
                         
@@ -93,6 +94,8 @@ class MilkSampleReader:
             return
 
         print("\n" + "="*80)
+        print(f"Author: {AUTHOR_NAME}".center(80))
+        print("="*80)
         print("MILK SAMPLE DATA".center(80))
         print("="*80)
 
@@ -111,6 +114,11 @@ class MilkSampleReader:
 def main():
     """Main function to demonstrate the MilkSampleReader functionality."""
     try:
+        # Display author name at the start
+        print("\n" + "="*80)
+        print(f"Author: {AUTHOR_NAME}".center(80))
+        print("="*80 + "\n")
+        
         reader = MilkSampleReader()
         samples = reader.read_samples(5)  # Read first 5 samples
         
