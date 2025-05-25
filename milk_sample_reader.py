@@ -84,16 +84,38 @@ class MilkSampleReader:
         except ValueError:
             return 0.0
 
+    def display_samples(self):
+        """
+        Display all samples in the data structure in a formatted way.
+        """
+        if not self.samples:
+            print("No samples to display.")
+            return
+
+        print("\n" + "="*80)
+        print("MILK SAMPLE DATA".center(80))
+        print("="*80)
+
+        for i, sample in enumerate(self.samples, 1):
+            print(f"\nSample #{i}")
+            print("-"*40)
+            print(f"Sample Type: {sample.sample_type}")
+            print(f"Type: {sample.type}")
+            print(f"Date Range: {sample.start_date} to {sample.stop_date}")
+            print(f"Location: {sample.station_name}, {sample.province}")
+            print(f"Sr-90 Activity: {sample.sr90_activity:.2e} Bq/L")
+            print(f"Sr-90 Error: {sample.sr90_error:.2e} Bq/L")
+            print(f"Sr-90 Activity/Calcium: {sample.sr90_activity_per_calcium:.2e} Bq/g")
+            print("-"*40)
+
 def main():
     """Main function to demonstrate the MilkSampleReader functionality."""
     try:
         reader = MilkSampleReader()
         samples = reader.read_samples(5)  # Read first 5 samples
         
-        print(f"\nSuccessfully read {len(samples)} samples:")
-        for i, sample in enumerate(samples, 1):
-            print(f"\nSample {i}:")
-            print(sample)
+        # Display the samples in a formatted way
+        reader.display_samples()
             
     except FileNotFoundError:
         print("Please ensure the CSV file is in the correct location.")
