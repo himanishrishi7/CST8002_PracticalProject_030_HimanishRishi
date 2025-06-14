@@ -23,18 +23,19 @@ class MilkSampleService:
     """
     
     def __init__(self):
-        """Initialize the service with a repository and empty sample collection."""
+        """Initialize the service with a repository and load up to 100 samples."""
         self.repository = MilkSampleRepository()
         self.samples: List[MilkSampleRecord] = []
+        self.load_samples(100)  # Load up to 100 samples on startup
     
-    def load_samples(self, num_samples: int = 6) -> None:
+    def load_samples(self, max_samples: int = 100) -> None:
         """
         Load samples from the repository.
         
         Args:
-            num_samples (int): Number of samples to load
+            max_samples (int): Maximum number of samples to load (default: 100)
         """
-        self.samples = self.repository.read_samples(num_samples)
+        self.samples = self.repository.read_samples(max_samples)
     
     def get_sample(self, index: int) -> Optional[MilkSampleRecord]:
         """

@@ -34,12 +34,12 @@ class MilkSampleRepository:
             for file in os.listdir(current_dir):
                 print(f"  - {file}")
     
-    def read_samples(self, num_samples: int = 6) -> List[MilkSampleRecord]:
+    def read_samples(self, max_samples: int = 100) -> List[MilkSampleRecord]:
         """
-        Read the specified number of samples from the CSV file.
+        Read up to the specified number of samples from the CSV file.
         
         Args:
-            num_samples (int): Number of samples to read
+            max_samples (int): Maximum number of samples to read (default: 100)
             
         Returns:
             List[MilkSampleRecord]: List of parsed sample records
@@ -54,7 +54,7 @@ class MilkSampleRepository:
                 csv_reader = csv.reader(f)
                 next(csv_reader)  # Skip header
                 
-                for _ in range(num_samples):
+                for _ in range(max_samples):
                     try:
                         values = next(csv_reader)
                         values = [v.strip() for v in values if v.strip()]
@@ -73,6 +73,7 @@ class MilkSampleRepository:
                             )
                             samples.append(sample)
                     except StopIteration:
+                        # End of file reached
                         break
                     except (ValueError, IndexError) as e:
                         print(f"Error parsing line: {values}")
@@ -81,9 +82,14 @@ class MilkSampleRepository:
                         
         except FileNotFoundError:
             print(f"Error: File '{self.filename}' not found.")
+            print(f"Current working directory: {os.getcwd()}")
+            print("Directory contents:")
+            for file in os.listdir(os.getcwd()):
+                print(f"  - {file}")
             raise
         except Exception as e:
             print(f"Unexpected error reading file: {str(e)}")
             raise
             
+        print(f"Successfully loaded {len(samples)} samples from the CSV file.")
         return samples 
