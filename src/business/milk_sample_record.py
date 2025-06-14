@@ -5,7 +5,8 @@ Due Date: 25/05/2025
 Author: Himanish Rishi
 
 This module contains the MilkSampleRecord class which represents a single record
-from the strontium-90 milk sample dataset. It is part of the Business Layer.
+from the strontium-90 milk sample dataset. It uses the exact column names from
+the CSV file as field names.
 """
 
 from dataclasses import dataclass
@@ -28,15 +29,16 @@ class MilkSampleRecord:
         sr90_error (Optional[float]): Error in strontium-90 activity measurement
         sr90_activity_per_calcium (Optional[float]): Strontium-90 activity per calcium in Bq/g
     """
-    sample_type: str
-    type: str
-    start_date: str
-    stop_date: str
-    station_name: str
-    province: str
-    sr90_activity: float
-    sr90_error: Optional[float]
-    sr90_activity_per_calcium: Optional[float]
+    # Column names from CSV file
+    sample_type: str  # "Sample Type/ Type d'échantillon"
+    type: str  # "Type"
+    start_date: str  # "Start Date/ Date de Début"
+    stop_date: str  # "Stop Date/ Date de Fin"
+    station_name: str  # "Station Name/ Nom de Station"
+    province: str  # "Province"
+    sr90_activity: float  # "Sr90 Activity/ Activité (Bq/L)"
+    sr90_error: Optional[float]  # "Sr90 Error/ Erreur (Bq/L)"
+    sr90_activity_per_calcium: Optional[float]  # "Sr90 Activity/Calcium / Activité/Calcium (Bq/g)"
     
     def __post_init__(self):
         """
