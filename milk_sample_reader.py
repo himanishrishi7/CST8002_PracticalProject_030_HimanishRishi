@@ -40,6 +40,7 @@ class SampleCollection:
         self.sample3: Optional[MilkSampleRecord] = None
         self.sample4: Optional[MilkSampleRecord] = None
         self.sample5: Optional[MilkSampleRecord] = None
+        self.sample6: Optional[MilkSampleRecord] = None
 
 class MilkSampleReader:
     """
@@ -74,7 +75,7 @@ class MilkSampleReader:
             for file in os.listdir(current_dir):
                 print(f"  - {file}")
 
-    def read_samples(self, num_samples: int = 5) -> SampleCollection:
+    def read_samples(self, num_samples: int = 6) -> SampleCollection:
         """
         Read the specified number of samples from the CSV file and store them as individual record objects.
         
@@ -152,7 +153,7 @@ class MilkSampleReader:
         print("MILK SAMPLE DATA".center(80))
         print("="*80)
 
-        for i in range(1, 6):
+        for i in range(1, 9):
             sample = getattr(self.samples, f'sample{i}')
             if sample is None:
                 continue
@@ -187,7 +188,7 @@ def main():
         print("="*80 + "\n")
         
         reader = MilkSampleReader()
-        samples = reader.read_samples(5)  # Read first 5 samples
+        samples = reader.read_samples(6)  # Read first 5 samples
         
         # Display the samples in a formatted way
         reader.display_samples()
