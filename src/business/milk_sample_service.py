@@ -37,6 +37,16 @@ class MilkSampleService:
         """
         self.samples = self.repository.read_samples(max_samples)
     
+    def reload_samples(self, max_samples: int = 100) -> None:
+        """
+        Reload samples from the repository, replacing existing data.
+        
+        Args:
+            max_samples (int): Maximum number of samples to load (default: 100)
+        """
+        self.samples.clear()  # Clear existing samples
+        self.load_samples(max_samples)  # Load new samples
+    
     def get_sample(self, index: int) -> Optional[MilkSampleRecord]:
         """
         Get a sample by index.
