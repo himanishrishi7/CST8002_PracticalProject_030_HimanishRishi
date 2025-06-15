@@ -1,22 +1,12 @@
 """
 CST8002 - Practical Project 2
 Professor: Tyler DeLay
-Due Date: 25/05/2025
+Date: 15/05/2025
 Author: Himanish Rishi
 
-This module contains unit tests for the MilkSampleService class.
-
-The tests verify the functionality of the service layer, ensuring that:
-- Records can be created and stored correctly
-- Data validation works as expected
-- The in-memory collection is properly maintained
-- All operations return expected results
-
-Test Structure:
-- Each test method focuses on a specific functionality
-- Tests use the Arrange-Act-Assert pattern
-- Test data is isolated and independent
-- Clean state is maintained between tests
+This module contains test cases for the MilkSampleService class.
+The tests verify the functionality of the service layer, including
+record creation, data validation, and in-memory collection maintenance.
 """
 
 import unittest
@@ -26,6 +16,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.business.milk_sample_service import MilkSampleService
 from src.business.milk_sample_record import MilkSampleRecord
+
+# Author information
+AUTHOR_NAME = "Himanish Rishi"
 
 class TestMilkSampleService(unittest.TestCase):
     """
@@ -47,6 +40,7 @@ class TestMilkSampleService(unittest.TestCase):
         It creates a new service instance and clears any existing samples.
         This ensures that tests are independent and don't affect each other.
         """
+        print(f"\nRunning test by {AUTHOR_NAME}")
         self.service = MilkSampleService()
         # Clear existing samples to start with a clean state
         self.service.samples.clear()
@@ -120,6 +114,9 @@ class TestMilkSampleService(unittest.TestCase):
         self.assertEqual(stored_sample.sr90_activity, test_data['sr90_activity'])
         self.assertEqual(stored_sample.sr90_error, test_data['sr90_error'])
         self.assertEqual(stored_sample.sr90_activity_per_calcium, test_data['sr90_activity_per_calcium'])
+        
+        print(f"Test completed successfully by {AUTHOR_NAME}")
 
 if __name__ == '__main__':
+    print(f"\nRunning tests by {AUTHOR_NAME}")
     unittest.main() 

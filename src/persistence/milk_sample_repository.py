@@ -54,35 +54,44 @@ class MilkSampleRepository:
             ValueError: If there's an error parsing the data
         """
         samples = []
+        skipped_rows = 0
+        total_rows = 0
         try:
             with open(self.filename, "r", encoding="utf-8-sig", errors='ignore') as f:
                 csv_reader = csv.reader(f)
                 next(csv_reader)  # Skip header
                 
-                for _ in range(max_samples):
-                    try:
-                        values = next(csv_reader)
-                        values = [v.strip() for v in values if v.strip()]
-                        
-                        if len(values) >= 9:
-                            sample = MilkSampleRecord(
-                                sample_type=values[0],
-                                type=values[1],
-                                start_date=values[2],
-                                stop_date=values[3],
-                                station_name=values[4],
-                                province=values[5],
-                                sr90_activity=values[6],
-                                sr90_error=values[7],
-                                sr90_activity_per_calcium=values[8]
-                            )
-                            samples.append(sample)
-                    except StopIteration:
-                        # End of file reached
+                for row_num, values in enumerate(csv_reader, start=2):  # start=2 because we skipped header
+                    total_rows += 1
+                    if len(samples) >= max_samples:
                         break
+                        
+                    try:
+                        # Clean and validate values
+                        cleaned_values = [v.strip() for v in values if v.strip()]
+                        
+                        if len(cleaned_values) < 9:
+                            print(f"Skipping row {row_num}: Insufficient values (found {len(cleaned_values)}, need 9)")
+                            print(f"Row data: {values}")
+                            skipped_rows += 1
+                            continue
+                            
+                        sample = MilkSampleRecord(
+                            sample_type=cleaned_values[0],
+                            type=cleaned_values[1],
+                            start_date=cleaned_values[2],
+                            stop_date=cleaned_values[3],
+                            station_name=cleaned_values[4],
+                            province=cleaned_values[5],
+                            sr90_activity=cleaned_values[6],
+                            sr90_error=cleaned_values[7],
+                            sr90_activity_per_calcium=cleaned_values[8]
+                        )
+                        samples.append(sample)
                     except (ValueError, IndexError) as e:
-                        print(f"Error parsing line: {values}")
-                        print(f"Error details: {str(e)}")
+                        print(f"Error parsing row {row_num}: {str(e)}")
+                        print(f"Row data: {values}")
+                        skipped_rows += 1
                         continue
                         
         except FileNotFoundError:
@@ -96,8 +105,13 @@ class MilkSampleRepository:
             print(f"Unexpected error reading file: {str(e)}")
             raise
             
-        print(f"Successfully loaded {len(samples)} samples from the CSV file.")
-        return samples 
+        print(f"\nFile Statistics:")
+        print(f"Total rows processed: {total_rows}")
+        print(f"Rows skipped: {skipped_rows}")
+        print(f"Rows successfully loaded: {len(samples)}")
+        print(f"Maximum samples requested: {max_samples}")
+        
+        return samples
 
     def save_samples(self, samples: List[MilkSampleRecord]) -> str:
         """

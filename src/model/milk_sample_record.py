@@ -5,8 +5,12 @@ Date: 15/05/2025
 Author: Himanish Rishi
 
 This module contains the MilkSampleRecord class which represents a single record
-from the strontium-90 milk sample dataset. It uses the exact column names from
-the CSV file as field names.
+from the strontium-90 milk sample dataset. It is part of the Model Layer.
+
+The model layer is responsible for:
+- Defining the data structures used in the application
+- Providing data validation and type conversion
+- Maintaining data integrity
 """
 
 from dataclasses import dataclass
@@ -17,6 +21,12 @@ class MilkSampleRecord:
     """
     A record object representing a milk sample measurement from the dataset.
     This class uses the exact column names from the CSV file as field names.
+    
+    The class is implemented as a dataclass to automatically generate:
+    - __init__ method
+    - __repr__ method
+    - __eq__ method
+    - Other special methods
     
     Attributes:
         sample_type (str): Type of sample (e.g., MILK)
@@ -38,12 +48,17 @@ class MilkSampleRecord:
     province: str  # "Province"
     sr90_activity: float  # "Sr90 Activity/ Activité (Bq/L)"
     sr90_error: Optional[float]  # "Sr90 Error/ Erreur (Bq/L)"
-    sr90_activity_per_calcium: Optional[float]  # "Sr90 Activity/Calcium / Activité/Calcium (Bq/g)"
+    sr90_activity_per_calcium: Optional[float]  # "Sr90 Activity/Calcium (Bq/g)"
     
     def __post_init__(self):
         """
         Convert string values to appropriate types after initialization.
         This method is automatically called after __init__ when using @dataclass.
+        
+        The method:
+        1. Converts empty strings to None for optional fields
+        2. Converts string values to float for numeric fields
+        3. Ensures data type consistency
         """
         # Convert empty strings to None for optional fields
         if self.sr90_error == "":
