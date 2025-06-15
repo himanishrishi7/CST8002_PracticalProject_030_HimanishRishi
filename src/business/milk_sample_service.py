@@ -25,6 +25,7 @@ class MilkSampleService:
     2. Providing business logic operations on the samples
     3. Coordinating with the persistence layer
     4. Saving samples to new files
+    5. Creating and storing new sample records
     """
     
     def __init__(self):
@@ -94,4 +95,58 @@ class MilkSampleService:
         Raises:
             IOError: If there's an error writing to the file
         """
-        return self.repository.save_samples(self.samples) 
+        return self.repository.save_samples(self.samples)
+    
+    def create_new_sample(self, 
+                         sample_type: str,
+                         type: str,
+                         start_date: str,
+                         stop_date: str,
+                         station_name: str,
+                         province: str,
+                         sr90_activity: float,
+                         sr90_error: Optional[float] = None,
+                         sr90_activity_per_calcium: Optional[float] = None) -> MilkSampleRecord:
+        """
+        Create a new milk sample record and add it to the in-memory collection.
+        
+        Args:
+            sample_type (str): Type of sample (e.g., MILK)
+            type (str): Specific type of milk (e.g., WHOLE)
+            start_date (str): Start date of the sampling period
+            stop_date (str): End date of the sampling period
+            station_name (str): Name of the sampling station
+            province (str): Province where the sample was taken
+            sr90_activity (float): Strontium-90 activity in Bq/L
+            sr90_error (Optional[float]): Error in strontium-90 activity measurement
+            sr90_activity_per_calcium (Optional[float]): Strontium-90 activity per calcium in Bq/g
+            
+        Returns:
+            MilkSampleRecord: The newly created sample record
+            
+        Raises:
+            ValueError: If required fields are invalid
+        """
+        # Validate required fields
+        if not all([sample_type, type, start_date, stop_date, station_name, province]):
+            raise ValueError("All fields except sr90_error and sr90_activity_per_calcium are required")
+        
+        if not isinstance(sr90_activity, (int, float)) or sr90_activity < 0:
+            raise ValueError("Sr90 activity must be a non-negative number")
+            
+        # Create new record
+        new_sample = MilkSampleRecord(
+            sample_type=sample_type,
+            type=type,
+            start_date=start_date,
+            stop_date=stop_date,
+            station_name=station_name,
+            province=province,
+            sr90_activity=sr90_activity,
+            sr90_error=sr90_error,
+            sr90_activity_per_calcium=sr90_activity_per_calcium
+        )
+        
+        # Add to in-memory collection
+        self.samples.append(new_sample)
+        return new_sample 

@@ -47,7 +47,8 @@ class MilkSampleView:
         print("2. Display all samples")
         print("3. Display a single sample")
         print("4. Save samples to new file")
-        print("5. Exit")
+        print("5. Create new sample")
+        print("6. Exit")
         print("-"*40)
         print(f"Author: {AUTHOR_NAME}".center(80))
     
@@ -111,13 +112,74 @@ class MilkSampleView:
             print(f"\nError saving samples: {str(e)}")
         print(f"Author: {AUTHOR_NAME}".center(80))
     
+    def handle_create_sample(self):
+        """Handle creating a new milk sample record."""
+        try:
+            print("\nEnter sample details:")
+            sample_type = input("Sample Type (e.g., MILK): ").strip()
+            type = input("Type (e.g., WHOLE): ").strip()
+            start_date = input("Start Date (YYYY-MM-DD): ").strip()
+            stop_date = input("Stop Date (YYYY-MM-DD): ").strip()
+            station_name = input("Station Name: ").strip()
+            province = input("Province: ").strip()
+            
+            # Get Sr90 activity with validation
+            while True:
+                try:
+                    sr90_activity = float(input("Sr90 Activity (Bq/L): ").strip())
+                    if sr90_activity < 0:
+                        print("Activity must be non-negative. Please try again.")
+                        continue
+                    break
+                except ValueError:
+                    print("Please enter a valid number.")
+            
+            # Get optional fields
+            sr90_error = None
+            error_input = input("Sr90 Error (Bq/L) [optional, press Enter to skip]: ").strip()
+            if error_input:
+                try:
+                    sr90_error = float(error_input)
+                except ValueError:
+                    print("Invalid error value. Skipping error field.")
+            
+            sr90_activity_per_calcium = None
+            calcium_input = input("Sr90 Activity/Calcium (Bq/g) [optional, press Enter to skip]: ").strip()
+            if calcium_input:
+                try:
+                    sr90_activity_per_calcium = float(calcium_input)
+                except ValueError:
+                    print("Invalid calcium value. Skipping calcium field.")
+            
+            # Create the new sample
+            new_sample = self.service.create_new_sample(
+                sample_type=sample_type,
+                type=type,
+                start_date=start_date,
+                stop_date=stop_date,
+                station_name=station_name,
+                province=province,
+                sr90_activity=sr90_activity,
+                sr90_error=sr90_error,
+                sr90_activity_per_calcium=sr90_activity_per_calcium
+            )
+            
+            print("\nNew sample created successfully!")
+            self.display_sample(new_sample, len(self.service.samples) - 1)
+            
+        except ValueError as e:
+            print(f"\nError creating sample: {str(e)}")
+        except Exception as e:
+            print(f"\nUnexpected error: {str(e)}")
+        print(f"Author: {AUTHOR_NAME}".center(80))
+    
     def run(self):
         """Run the main application loop."""
         try:
             self.display_header()
             while True:
                 self.display_menu()
-                choice = input("\nEnter your choice (1-5): ")
+                choice = input("\nEnter your choice (1-6): ")
                 
                 if choice == "1":
                     self.handle_reload()
@@ -128,6 +190,8 @@ class MilkSampleView:
                 elif choice == "4":
                     self.handle_save_samples()
                 elif choice == "5":
+                    self.handle_create_sample()
+                elif choice == "6":
                     print("\nThank you for using the Milk Sample Data Viewer!")
                     print(f"Author: {AUTHOR_NAME}".center(80))
                     break
