@@ -27,6 +27,7 @@ class MilkSampleService:
     4. Saving samples to new files
     5. Creating and storing new sample records
     6. Editing existing sample records
+    7. Deleting sample records
     """
     
     def __init__(self):
@@ -201,4 +202,23 @@ class MilkSampleService:
         # Update the record in the collection
         self.samples[index] = new_record
         
-        return old_record, new_record 
+        return old_record, new_record
+    
+    def delete_sample(self, index: int) -> MilkSampleRecord:
+        """
+        Delete a milk sample record from the in-memory collection.
+        
+        Args:
+            index (int): Index of the sample to delete
+            
+        Returns:
+            MilkSampleRecord: The deleted sample record
+            
+        Raises:
+            IndexError: If the index is out of range
+        """
+        if not 0 <= index < len(self.samples):
+            raise IndexError(f"Index {index} is out of range")
+            
+        # Remove and return the deleted record
+        return self.samples.pop(index) 

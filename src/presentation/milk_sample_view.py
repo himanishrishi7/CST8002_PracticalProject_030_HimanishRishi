@@ -49,7 +49,8 @@ class MilkSampleView:
         print("4. Save samples to new file")
         print("5. Create new sample")
         print("6. Edit existing sample")
-        print("7. Exit")
+        print("7. Delete sample")
+        print("8. Exit")
         print("-"*40)
         print(f"Author: {AUTHOR_NAME}".center(80))
     
@@ -255,13 +256,55 @@ class MilkSampleView:
             print(f"\nUnexpected error: {str(e)}")
         print(f"Author: {AUTHOR_NAME}".center(80))
     
+    def handle_delete_sample(self):
+        """Handle deleting a milk sample record."""
+        try:
+            # First, display all samples to help user choose
+            print("\nAvailable samples:")
+            self.display_all_samples()
+            
+            # Get sample index
+            while True:
+                try:
+                    index = int(input("\nEnter the number of the sample to delete (1-{}): ".format(
+                        self.service.get_sample_count()))) - 1
+                    if 0 <= index < self.service.get_sample_count():
+                        break
+                    print("Invalid sample number. Please try again.")
+                except ValueError:
+                    print("Please enter a valid number.")
+            
+            # Get sample to be deleted
+            sample_to_delete = self.service.get_sample(index)
+            print("\nSample to be deleted:")
+            self.display_sample(sample_to_delete, index)
+            
+            # Confirm deletion
+            confirm = input("\nAre you sure you want to delete this sample? (yes/no): ").strip().lower()
+            if confirm != 'yes':
+                print("\nDeletion cancelled.")
+                return
+            
+            # Delete the sample
+            deleted_sample = self.service.delete_sample(index)
+            print("\nSample deleted successfully!")
+            print("\nDeleted sample details:")
+            self.display_sample(deleted_sample, index)
+            print(f"\nRemaining samples: {self.service.get_sample_count()}")
+            
+        except ValueError as e:
+            print(f"\nError deleting sample: {str(e)}")
+        except Exception as e:
+            print(f"\nUnexpected error: {str(e)}")
+        print(f"Author: {AUTHOR_NAME}".center(80))
+    
     def run(self):
         """Run the main application loop."""
         try:
             self.display_header()
             while True:
                 self.display_menu()
-                choice = input("\nEnter your choice (1-7): ")
+                choice = input("\nEnter your choice (1-8): ")
                 
                 if choice == "1":
                     self.handle_reload()
@@ -276,6 +319,8 @@ class MilkSampleView:
                 elif choice == "6":
                     self.handle_edit_sample()
                 elif choice == "7":
+                    self.handle_delete_sample()
+                elif choice == "8":
                     print("\nThank you for using the Milk Sample Data Viewer!")
                     print(f"Author: {AUTHOR_NAME}".center(80))
                     break
