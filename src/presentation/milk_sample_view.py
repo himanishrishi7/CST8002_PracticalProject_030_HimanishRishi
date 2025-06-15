@@ -48,7 +48,8 @@ class MilkSampleView:
         print("3. Display a single sample")
         print("4. Save samples to new file")
         print("5. Create new sample")
-        print("6. Exit")
+        print("6. Edit existing sample")
+        print("7. Exit")
         print("-"*40)
         print(f"Author: {AUTHOR_NAME}".center(80))
     
@@ -173,13 +174,94 @@ class MilkSampleView:
             print(f"\nUnexpected error: {str(e)}")
         print(f"Author: {AUTHOR_NAME}".center(80))
     
+    def handle_edit_sample(self):
+        """Handle editing an existing milk sample record."""
+        try:
+            # First, display all samples to help user choose
+            print("\nAvailable samples:")
+            self.display_all_samples()
+            
+            # Get sample index
+            while True:
+                try:
+                    index = int(input("\nEnter the number of the sample to edit (1-{}): ".format(
+                        self.service.get_sample_count()))) - 1
+                    if 0 <= index < self.service.get_sample_count():
+                        break
+                    print("Invalid sample number. Please try again.")
+                except ValueError:
+                    print("Please enter a valid number.")
+            
+            # Get current sample
+            current_sample = self.service.get_sample(index)
+            print("\nCurrent sample values:")
+            self.display_sample(current_sample, index)
+            
+            print("\nEnter new values (press Enter to keep current value):")
+            
+            # Get new values for each field
+            sample_type = input(f"Sample Type [{current_sample.sample_type}]: ").strip()
+            type = input(f"Type [{current_sample.type}]: ").strip()
+            start_date = input(f"Start Date [{current_sample.start_date}]: ").strip()
+            stop_date = input(f"Stop Date [{current_sample.stop_date}]: ").strip()
+            station_name = input(f"Station Name [{current_sample.station_name}]: ").strip()
+            province = input(f"Province [{current_sample.province}]: ").strip()
+            
+            # Get Sr90 activity with validation
+            while True:
+                activity_input = input(f"Sr90 Activity (Bq/L) [{current_sample.sr90_activity}]: ").strip()
+                if not activity_input:  # Keep current value
+                    sr90_activity = current_sample.sr90_activity
+                    break
+                try:
+                    sr90_activity = float(activity_input)
+                    if sr90_activity < 0:
+                        print("Activity must be non-negative. Please try again.")
+                        continue
+                    break
+                except ValueError:
+                    print("Please enter a valid number.")
+            
+            # Get optional fields
+            error_input = input(f"Sr90 Error (Bq/L) [{current_sample.sr90_error}]: ").strip()
+            sr90_error = float(error_input) if error_input else current_sample.sr90_error
+            
+            calcium_input = input(f"Sr90 Activity/Calcium (Bq/g) [{current_sample.sr90_activity_per_calcium}]: ").strip()
+            sr90_activity_per_calcium = float(calcium_input) if calcium_input else current_sample.sr90_activity_per_calcium
+            
+            # Update the sample
+            old_sample, new_sample = self.service.edit_sample(
+                index,
+                sample_type=sample_type or current_sample.sample_type,
+                type=type or current_sample.type,
+                start_date=start_date or current_sample.start_date,
+                stop_date=stop_date or current_sample.stop_date,
+                station_name=station_name or current_sample.station_name,
+                province=province or current_sample.province,
+                sr90_activity=sr90_activity,
+                sr90_error=sr90_error,
+                sr90_activity_per_calcium=sr90_activity_per_calcium
+            )
+            
+            print("\nSample updated successfully!")
+            print("\nOld values:")
+            self.display_sample(old_sample, index)
+            print("\nNew values:")
+            self.display_sample(new_sample, index)
+            
+        except ValueError as e:
+            print(f"\nError updating sample: {str(e)}")
+        except Exception as e:
+            print(f"\nUnexpected error: {str(e)}")
+        print(f"Author: {AUTHOR_NAME}".center(80))
+    
     def run(self):
         """Run the main application loop."""
         try:
             self.display_header()
             while True:
                 self.display_menu()
-                choice = input("\nEnter your choice (1-6): ")
+                choice = input("\nEnter your choice (1-7): ")
                 
                 if choice == "1":
                     self.handle_reload()
@@ -192,6 +274,8 @@ class MilkSampleView:
                 elif choice == "5":
                     self.handle_create_sample()
                 elif choice == "6":
+                    self.handle_edit_sample()
+                elif choice == "7":
                     print("\nThank you for using the Milk Sample Data Viewer!")
                     print(f"Author: {AUTHOR_NAME}".center(80))
                     break

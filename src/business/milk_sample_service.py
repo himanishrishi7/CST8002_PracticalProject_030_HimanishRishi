@@ -12,7 +12,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from src.business.milk_sample_record import MilkSampleRecord
 from src.persistence.milk_sample_repository import MilkSampleRepository
 
@@ -26,6 +26,7 @@ class MilkSampleService:
     3. Coordinating with the persistence layer
     4. Saving samples to new files
     5. Creating and storing new sample records
+    6. Editing existing sample records
     """
     
     def __init__(self):
@@ -149,4 +150,55 @@ class MilkSampleService:
         
         # Add to in-memory collection
         self.samples.append(new_sample)
-        return new_sample 
+        return new_sample
+    
+    def edit_sample(self, index: int, **kwargs) -> Tuple[MilkSampleRecord, MilkSampleRecord]:
+        """
+        Edit an existing milk sample record.
+        
+        Args:
+            index (int): Index of the sample to edit
+            **kwargs: Fields to update with their new values
+            
+        Returns:
+            Tuple[MilkSampleRecord, MilkSampleRecord]: Tuple containing (old_record, new_record)
+            
+        Raises:
+            IndexError: If the index is out of range
+            ValueError: If any of the updated fields are invalid
+        """
+        if not 0 <= index < len(self.samples):
+            raise IndexError(f"Index {index} is out of range")
+            
+        old_record = self.samples[index]
+        
+        # Create a new record with updated values
+        new_values = {
+            'sample_type': kwargs.get('sample_type', old_record.sample_type),
+            'type': kwargs.get('type', old_record.type),
+            'start_date': kwargs.get('start_date', old_record.start_date),
+            'stop_date': kwargs.get('stop_date', old_record.stop_date),
+            'station_name': kwargs.get('station_name', old_record.station_name),
+            'province': kwargs.get('province', old_record.province),
+            'sr90_activity': kwargs.get('sr90_activity', old_record.sr90_activity),
+            'sr90_error': kwargs.get('sr90_error', old_record.sr90_error),
+            'sr90_activity_per_calcium': kwargs.get('sr90_activity_per_calcium', old_record.sr90_activity_per_calcium)
+        }
+        
+        # Validate required fields
+        if not all([new_values['sample_type'], new_values['type'], 
+                   new_values['start_date'], new_values['stop_date'],
+                   new_values['station_name'], new_values['province']]):
+            raise ValueError("All fields except sr90_error and sr90_activity_per_calcium are required")
+        
+        # Validate numeric fields
+        if not isinstance(new_values['sr90_activity'], (int, float)) or new_values['sr90_activity'] < 0:
+            raise ValueError("Sr90 activity must be a non-negative number")
+            
+        # Create new record
+        new_record = MilkSampleRecord(**new_values)
+        
+        # Update the record in the collection
+        self.samples[index] = new_record
+        
+        return old_record, new_record 
