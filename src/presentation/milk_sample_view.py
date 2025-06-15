@@ -35,7 +35,7 @@ class MilkSampleView:
     def display_header(self):
         """Display the application header with author information."""
         print("\n" + "="*80)
-        print(f"Author: {AUTHOR_NAME}".center(80))
+        print(f"Program by {AUTHOR_NAME}".center(80))
         print("="*80)
         print("MILK SAMPLE DATA VIEWER".center(80))
         print("="*80 + "\n")
@@ -52,7 +52,7 @@ class MilkSampleView:
         print("7. Delete sample")
         print("8. Exit")
         print("-"*40)
-        print(f"Author: {AUTHOR_NAME}".center(80))
+        print(f"Program by {AUTHOR_NAME}".center(80))
     
     def display_sample(self, sample: MilkSampleRecord, index: int):
         """
@@ -74,13 +74,18 @@ class MilkSampleView:
         if sample.sr90_activity_per_calcium is not None:
             print(f"Sr-90 Activity/Calcium: {sample.sr90_activity_per_calcium:.2e} Bq/g")
         print("-"*40)
-        print(f"Author: {AUTHOR_NAME}".center(80))
+        print(f"Program by {AUTHOR_NAME}".center(80))
     
     def display_all_samples(self):
         """Display all loaded samples."""
         samples = self.service.get_all_samples()
         for i, sample in enumerate(samples):
             self.display_sample(sample, i)
+            # Add author name every 10 records
+            if (i + 1) % 10 == 0:
+                print("\n" + "="*80)
+                print(f"Program by {AUTHOR_NAME}".center(80))
+                print("="*80 + "\n")
     
     def handle_reload(self):
         """Handle reloading data from the dataset."""
@@ -90,7 +95,7 @@ class MilkSampleView:
             print(f"Successfully reloaded {self.service.get_sample_count()} samples.")
         except Exception as e:
             print(f"Error reloading data: {str(e)}")
-        print(f"Author: {AUTHOR_NAME}".center(80))
+        print(f"Program by {AUTHOR_NAME}".center(80))
     
     def handle_display_single(self):
         """Handle displaying a single sample."""
@@ -103,7 +108,7 @@ class MilkSampleView:
                 print("Invalid sample number.")
         except ValueError:
             print("Please enter a valid number.")
-        print(f"Author: {AUTHOR_NAME}".center(80))
+        print(f"Program by {AUTHOR_NAME}".center(80))
     
     def handle_save_samples(self):
         """Handle saving samples to a new file."""
@@ -112,7 +117,7 @@ class MilkSampleView:
             print(f"\nSamples have been saved to: {output_path}")
         except Exception as e:
             print(f"\nError saving samples: {str(e)}")
-        print(f"Author: {AUTHOR_NAME}".center(80))
+        print(f"Program by {AUTHOR_NAME}".center(80))
     
     def handle_create_sample(self):
         """Handle creating a new milk sample record."""
@@ -173,7 +178,7 @@ class MilkSampleView:
             print(f"\nError creating sample: {str(e)}")
         except Exception as e:
             print(f"\nUnexpected error: {str(e)}")
-        print(f"Author: {AUTHOR_NAME}".center(80))
+        print(f"Program by {AUTHOR_NAME}".center(80))
     
     def handle_edit_sample(self):
         """Handle editing an existing milk sample record."""
@@ -254,7 +259,7 @@ class MilkSampleView:
             print(f"\nError updating sample: {str(e)}")
         except Exception as e:
             print(f"\nUnexpected error: {str(e)}")
-        print(f"Author: {AUTHOR_NAME}".center(80))
+        print(f"Program by {AUTHOR_NAME}".center(80))
     
     def handle_delete_sample(self):
         """Handle deleting a milk sample record."""
@@ -296,7 +301,7 @@ class MilkSampleView:
             print(f"\nError deleting sample: {str(e)}")
         except Exception as e:
             print(f"\nUnexpected error: {str(e)}")
-        print(f"Author: {AUTHOR_NAME}".center(80))
+        print(f"Program by {AUTHOR_NAME}".center(80))
     
     def run(self):
         """Run the main application loop."""
@@ -322,15 +327,15 @@ class MilkSampleView:
                     self.handle_delete_sample()
                 elif choice == "8":
                     print("\nThank you for using the Milk Sample Data Viewer!")
-                    print(f"Author: {AUTHOR_NAME}".center(80))
+                    print(f"Program by {AUTHOR_NAME}".center(80))
                     break
                 else:
                     print("Invalid choice. Please try again.")
-                    print(f"Author: {AUTHOR_NAME}".center(80))
+                    print(f"Program by {AUTHOR_NAME}".center(80))
                 
         except Exception as e:
             print(f"An error occurred: {str(e)}")
-            print(f"Author: {AUTHOR_NAME}".center(80))
+            print(f"Program by {AUTHOR_NAME}".center(80))
 
 def main():
     """Main entry point for the application."""
