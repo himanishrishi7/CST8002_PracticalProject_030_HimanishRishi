@@ -5,6 +5,18 @@ Due Date: 25/05/2025
 Author: Himanish Rishi
 
 This module contains unit tests for the MilkSampleService class.
+
+The tests verify the functionality of the service layer, ensuring that:
+- Records can be created and stored correctly
+- Data validation works as expected
+- The in-memory collection is properly maintained
+- All operations return expected results
+
+Test Structure:
+- Each test method focuses on a specific functionality
+- Tests use the Arrange-Act-Assert pattern
+- Test data is isolated and independent
+- Clean state is maintained between tests
 """
 
 import unittest
@@ -16,16 +28,54 @@ from src.business.milk_sample_service import MilkSampleService
 from src.business.milk_sample_record import MilkSampleRecord
 
 class TestMilkSampleService(unittest.TestCase):
-    """Test cases for the MilkSampleService class."""
+    """
+    Test cases for the MilkSampleService class.
+    
+    This test class verifies the functionality of the MilkSampleService,
+    focusing on the record creation and management operations. Each test
+    method is independent and tests a specific aspect of the service.
+    
+    Test Methods:
+        - test_create_new_sample: Verifies record creation functionality
+    """
     
     def setUp(self):
-        """Set up test fixtures before each test method."""
+        """
+        Set up test fixtures before each test method.
+        
+        This method runs before each test to ensure a clean state.
+        It creates a new service instance and clears any existing samples.
+        This ensures that tests are independent and don't affect each other.
+        """
         self.service = MilkSampleService()
         # Clear existing samples to start with a clean state
         self.service.samples.clear()
     
     def test_create_new_sample(self):
-        """Test creating a new milk sample record."""
+        """
+        Test creating a new milk sample record.
+        
+        This test verifies that:
+        1. A new record can be created with valid data
+        2. The record is correctly added to the collection
+        3. All fields are properly stored
+        4. The returned record matches the input data
+        
+        Test Steps:
+        1. Arrange: Set up test data and initial state
+        2. Act: Call the create_new_sample method
+        3. Assert: Verify the results
+        
+        Test Data:
+            - Complete record with all fields
+            - Realistic values matching expected format
+        
+        Assertions:
+            - Collection size increases by 1
+            - Returned record is of correct type
+            - All fields match input data
+            - Stored record matches input data
+        """
         # Arrange
         initial_count = len(self.service.samples)
         test_data = {

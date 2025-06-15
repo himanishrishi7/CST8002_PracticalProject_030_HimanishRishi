@@ -6,6 +6,18 @@ Author: Himanish Rishi
 
 This module contains the MilkSampleService class which manages the business logic
 for milk sample data. It is part of the Business Layer.
+
+The service layer acts as an intermediary between the presentation layer and the
+persistence layer, handling all business logic and data operations. It maintains
+an in-memory collection of milk sample records and provides methods to manipulate
+this data.
+
+Key responsibilities:
+- Managing the collection of milk samples in memory
+- Providing business logic operations on the samples
+- Coordinating with the persistence layer for file operations
+- Validating data before storage
+- Handling data transformations
 """
 
 import sys
@@ -28,10 +40,24 @@ class MilkSampleService:
     5. Creating and storing new sample records
     6. Editing existing sample records
     7. Deleting sample records
+    
+    The service maintains an in-memory collection of MilkSampleRecord objects
+    and provides methods to manipulate this data. It also coordinates with the
+    persistence layer for file operations.
+    
+    Attributes:
+        repository (MilkSampleRepository): The repository instance for file operations
+        samples (List[MilkSampleRecord]): The in-memory collection of samples
     """
     
     def __init__(self):
-        """Initialize the service with a repository and load up to 100 samples."""
+        """
+        Initialize the service with a repository and load up to 100 samples.
+        
+        The constructor creates a new repository instance and loads the initial
+        set of samples from the data file. It sets up the basic structure needed
+        for the service to operate.
+        """
         self.repository = MilkSampleRepository()
         self.samples: List[MilkSampleRecord] = []
         self.load_samples(100)  # Load up to 100 samples on startup
@@ -40,8 +66,15 @@ class MilkSampleService:
         """
         Load samples from the repository.
         
+        This method reads samples from the data file through the repository
+        and stores them in the in-memory collection.
+        
         Args:
             max_samples (int): Maximum number of samples to load (default: 100)
+            
+        Raises:
+            FileNotFoundError: If the data file cannot be found
+            ValueError: If there's an error parsing the data
         """
         self.samples = self.repository.read_samples(max_samples)
     
@@ -49,8 +82,15 @@ class MilkSampleService:
         """
         Reload samples from the repository, replacing existing data.
         
+        This method clears the current in-memory collection and loads a fresh
+        set of samples from the data file.
+        
         Args:
             max_samples (int): Maximum number of samples to load (default: 100)
+            
+        Raises:
+            FileNotFoundError: If the data file cannot be found
+            ValueError: If there's an error parsing the data
         """
         self.samples.clear()  # Clear existing samples
         self.load_samples(max_samples)  # Load new samples
@@ -58,6 +98,9 @@ class MilkSampleService:
     def get_sample(self, index: int) -> Optional[MilkSampleRecord]:
         """
         Get a sample by index.
+        
+        This method retrieves a specific sample from the in-memory collection
+        based on its index.
         
         Args:
             index (int): Index of the sample to retrieve
@@ -73,6 +116,8 @@ class MilkSampleService:
         """
         Get all loaded samples.
         
+        This method returns the complete in-memory collection of samples.
+        
         Returns:
             List[MilkSampleRecord]: List of all samples
         """
@@ -82,6 +127,8 @@ class MilkSampleService:
         """
         Get the number of loaded samples.
         
+        This method returns the current size of the in-memory collection.
+        
         Returns:
             int: Number of samples
         """
@@ -90,6 +137,9 @@ class MilkSampleService:
     def save_samples_to_new_file(self) -> str:
         """
         Save the current samples to a new CSV file with a unique identifier.
+        
+        This method coordinates with the repository to save the current
+        in-memory collection to a new file with a unique name.
         
         Returns:
             str: The path to the newly created file
@@ -111,6 +161,9 @@ class MilkSampleService:
                          sr90_activity_per_calcium: Optional[float] = None) -> MilkSampleRecord:
         """
         Create a new milk sample record and add it to the in-memory collection.
+        
+        This method creates a new sample record with the provided data,
+        validates the input, and adds it to the in-memory collection.
         
         Args:
             sample_type (str): Type of sample (e.g., MILK)
@@ -156,6 +209,9 @@ class MilkSampleService:
     def edit_sample(self, index: int, **kwargs) -> Tuple[MilkSampleRecord, MilkSampleRecord]:
         """
         Edit an existing milk sample record.
+        
+        This method updates an existing sample record with new values,
+        validates the changes, and updates the in-memory collection.
         
         Args:
             index (int): Index of the sample to edit
@@ -207,6 +263,9 @@ class MilkSampleService:
     def delete_sample(self, index: int) -> MilkSampleRecord:
         """
         Delete a milk sample record from the in-memory collection.
+        
+        This method removes a sample record from the in-memory collection
+        based on its index.
         
         Args:
             index (int): Index of the sample to delete
