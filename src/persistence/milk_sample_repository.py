@@ -10,6 +10,7 @@ for the milk sample data. It is part of the Persistence Layer.
 
 import sys
 import os
+import uuid
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import csv
@@ -24,6 +25,7 @@ class MilkSampleRepository:
     1. Reading data from the CSV file
     2. Converting raw data into MilkSampleRecord objects
     3. Error handling for file operations
+    4. Saving data to new CSV files with unique identifiers
     """
     
     def __init__(self):
@@ -96,3 +98,59 @@ class MilkSampleRepository:
             
         print(f"Successfully loaded {len(samples)} samples from the CSV file.")
         return samples 
+
+    def save_samples(self, samples: List[MilkSampleRecord]) -> str:
+        """
+        Save samples to a new CSV file with a UUID-based filename.
+        
+        Args:
+            samples (List[MilkSampleRecord]): List of samples to save
+            
+        Returns:
+            str: The path to the newly created file
+            
+        Raises:
+            IOError: If there's an error writing to the file
+        """
+        # Generate a unique filename using UUID
+        unique_filename = f"milk_samples_{uuid.uuid4()}.csv"
+        current_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        output_path = os.path.join(current_dir, unique_filename)
+        
+        try:
+            with open(output_path, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                
+                # Write header
+                writer.writerow([
+                    "Sample Type/ Type d'échantillon",
+                    "Type",
+                    "Start Date/ Date de Début",
+                    "Stop Date/ Date de Fin",
+                    "Station Name/ Nom de Station",
+                    "Province",
+                    "Sr90 Activity/ Activité (Bq/L)",
+                    "Sr90 Error/ Erreur (Bq/L)",
+                    "Sr90 Activity/Calcium (Bq/g)"
+                ])
+                
+                # Write data rows
+                for sample in samples:
+                    writer.writerow([
+                        sample.sample_type,
+                        sample.type,
+                        sample.start_date,
+                        sample.stop_date,
+                        sample.station_name,
+                        sample.province,
+                        sample.sr90_activity,
+                        sample.sr90_error if sample.sr90_error is not None else "",
+                        sample.sr90_activity_per_calcium if sample.sr90_activity_per_calcium is not None else ""
+                    ])
+                    
+            print(f"Successfully saved {len(samples)} samples to {output_path}")
+            return output_path
+            
+        except IOError as e:
+            print(f"Error saving samples to file: {str(e)}")
+            raise 

@@ -46,7 +46,8 @@ class MilkSampleView:
         print("1. Reload data from dataset")
         print("2. Display all samples")
         print("3. Display a single sample")
-        print("4. Exit")
+        print("4. Save samples to new file")
+        print("5. Exit")
         print("-"*40)
         print(f"Author: {AUTHOR_NAME}".center(80))
     
@@ -101,13 +102,22 @@ class MilkSampleView:
             print("Please enter a valid number.")
         print(f"Author: {AUTHOR_NAME}".center(80))
     
+    def handle_save_samples(self):
+        """Handle saving samples to a new file."""
+        try:
+            output_path = self.service.save_samples_to_new_file()
+            print(f"\nSamples have been saved to: {output_path}")
+        except Exception as e:
+            print(f"\nError saving samples: {str(e)}")
+        print(f"Author: {AUTHOR_NAME}".center(80))
+    
     def run(self):
         """Run the main application loop."""
         try:
             self.display_header()
             while True:
                 self.display_menu()
-                choice = input("\nEnter your choice (1-4): ")
+                choice = input("\nEnter your choice (1-5): ")
                 
                 if choice == "1":
                     self.handle_reload()
@@ -116,6 +126,8 @@ class MilkSampleView:
                 elif choice == "3":
                     self.handle_display_single()
                 elif choice == "4":
+                    self.handle_save_samples()
+                elif choice == "5":
                     print("\nThank you for using the Milk Sample Data Viewer!")
                     print(f"Author: {AUTHOR_NAME}".center(80))
                     break

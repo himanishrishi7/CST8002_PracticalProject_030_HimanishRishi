@@ -24,6 +24,7 @@ class MilkSampleService:
     1. Managing the collection of milk samples
     2. Providing business logic operations on the samples
     3. Coordinating with the persistence layer
+    4. Saving samples to new files
     """
     
     def __init__(self):
@@ -81,4 +82,16 @@ class MilkSampleService:
         Returns:
             int: Number of samples
         """
-        return len(self.samples) 
+        return len(self.samples)
+    
+    def save_samples_to_new_file(self) -> str:
+        """
+        Save the current samples to a new CSV file with a unique identifier.
+        
+        Returns:
+            str: The path to the newly created file
+            
+        Raises:
+            IOError: If there's an error writing to the file
+        """
+        return self.repository.save_samples(self.samples) 
