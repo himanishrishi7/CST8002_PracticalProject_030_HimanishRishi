@@ -8,8 +8,11 @@ This module contains the MilkSampleRepository class which handles all file I/O o
 for the milk sample data. It is part of the Persistence Layer.
 """
 
-import csv
+import sys
 import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+import csv
 from typing import List, Optional
 from src.business.milk_sample_record import MilkSampleRecord
 

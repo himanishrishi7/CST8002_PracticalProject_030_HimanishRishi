@@ -8,6 +8,10 @@ This module contains the MilkSampleService class which manages the business logi
 for milk sample data. It is part of the Business Layer.
 """
 
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
 from typing import List, Optional
 from src.business.milk_sample_record import MilkSampleRecord
 from src.persistence.milk_sample_repository import MilkSampleRepository

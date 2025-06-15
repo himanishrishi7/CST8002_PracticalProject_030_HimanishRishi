@@ -8,6 +8,10 @@ This module contains the MilkSampleView class which handles user interaction and
 display of milk sample data. It is part of the Presentation Layer.
 """
 
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
 from src.business.milk_sample_service import MilkSampleService
 from src.business.milk_sample_record import MilkSampleRecord
 
