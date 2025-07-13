@@ -17,6 +17,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
 from src.business.milk_sample_db_service import MilkSampleDBService
 from src.model.milk_sample_record import MilkSampleRecord
 from src.persistence.data_migration import DataMigration
+from src.persistence.database_config import DatabaseConfig
 
 # Author information
 AUTHOR_NAME = "Himanish Rishi"
@@ -38,16 +39,53 @@ class MilkSampleDBView:
         self.initialize_database()
     
     def initialize_database(self):
-        """Initialize the database with data from CSV if empty."""
+        """Initialize the database by clearing existing data and reloading from CSV."""
         try:
+            print("Initializing database...")
+            
+            # Close all database connections more aggressively
+            try:
+                if hasattr(self.service.repository, 'db_config'):
+                    self.service.repository.db_config.close_connection()
+                if hasattr(self.service, 'repository') and hasattr(self.service.repository, 'db_config'):
+                    self.service.repository.db_config.close_connection()
+            except Exception as e:
+                print(f"Warning: Could not close some connections: {e}")
+            
+            # Force garbage collection to release file handles
+            import gc
+            gc.collect()
+            
+            # More aggressive approach: Delete and recreate database file
+            db_config = DatabaseConfig()
+            if os.path.exists(db_config.db_path):
+                print(f"Removing existing database file: {db_config.db_path}")
+                try:
+                    os.remove(db_config.db_path)
+                    print("Database file removed successfully")
+                except PermissionError:
+                    print("Warning: Could not delete database file (may be in use). Continuing with existing file.")
+                except Exception as e:
+                    print(f"Warning: Error deleting database file: {e}. Continuing with existing file.")
+            
+            # Create fresh database and table
+            print("Creating fresh database...")
+            db_config.initialize_database()
+            
+            # Always clear existing data first (in case there's any)
+            migration = DataMigration()
+            print("Clearing existing database records...")
+            migration.db_repository.clear_all_samples()
+            
+            # Reload fresh data from CSV
+            print("Migrating fresh data from CSV...")
+            total, successful, failed = migration.migrate_data()
+            print(f"Migration completed: {successful} records imported")
+            
+            # Verify the data
             count = self.service.get_sample_count()
-            if count == 0:
-                print("Database is empty. Migrating data from CSV...")
-                migration = DataMigration()
-                total, successful, failed = migration.migrate_data()
-                print(f"Migration completed: {successful} records imported")
-            else:
-                print(f"Database contains {count} records")
+            print(f"Database now contains {count} records")
+            
         except Exception as e:
             print(f"Error initializing database: {e}")
     
@@ -101,11 +139,11 @@ class MilkSampleDBView:
     def display_all_samples(self):
         """Display all samples from database."""
         try:
-            samples = self.service.get_all_samples(limit=50)  # Limit to first 50 for display
-            print(f"\nDisplaying first {len(samples)} samples from database:")
-            for i, sample in enumerate(samples, 1):
-                self.display_sample(sample, i)
-                if i % 5 == 0:  # Add separator every 5 samples
+            samples_with_ids = self.service.get_all_samples_with_ids(limit=50)  # Limit to first 50 for display
+            print(f"\nDisplaying first {len(samples_with_ids)} samples from database:")
+            for record_id, sample in samples_with_ids:
+                self.display_sample(sample, record_id)  # Use actual database ID
+                if record_id % 5 == 0:  # Add separator every 5 samples
                     print("\n" + "="*80)
                     print(f"Program by {AUTHOR_NAME}".center(80))
                     print("="*80 + "\n")
@@ -113,13 +151,53 @@ class MilkSampleDBView:
             print(f"Error displaying samples: {e}")
     
     def handle_reload(self):
-        """Handle reloading data from CSV to database."""
+        """Handle reloading data from CSV to database with aggressive refresh."""
         try:
             print("\nReloading data from CSV to database...")
+            
+            # Close all database connections more aggressively
+            try:
+                if hasattr(self.service.repository, 'db_config'):
+                    self.service.repository.db_config.close_connection()
+                if hasattr(self.service, 'repository') and hasattr(self.service.repository, 'db_config'):
+                    self.service.repository.db_config.close_connection()
+            except Exception as e:
+                print(f"Warning: Could not close some connections: {e}")
+            
+            # Force garbage collection to release file handles
+            import gc
+            gc.collect()
+            
+            # More aggressive approach: Delete and recreate database file
+            db_config = DatabaseConfig()
+            if os.path.exists(db_config.db_path):
+                print(f"Removing existing database file: {db_config.db_path}")
+                try:
+                    os.remove(db_config.db_path)
+                    print("Database file removed successfully")
+                except PermissionError:
+                    print("Warning: Could not delete database file (may be in use). Continuing with existing file.")
+                except Exception as e:
+                    print(f"Warning: Error deleting database file: {e}. Continuing with existing file.")
+            
+            # Create fresh database and table
+            print("Creating fresh database...")
+            db_config.initialize_database()
+            
+            # Always clear existing data first (in case there's any)
             migration = DataMigration()
+            print("Clearing existing database records...")
+            migration.db_repository.clear_all_samples()
+            
+            # Reload fresh data from CSV
+            print("Migrating fresh data from CSV...")
             total, successful, failed = migration.migrate_data()
-            print(f"Successfully migrated {successful} records to database.")
-            print(f"Failed migrations: {failed}")
+            print(f"Migration completed: {successful} records imported")
+            
+            # Verify the data
+            count = self.service.get_sample_count()
+            print(f"Database now contains {count} records")
+            
         except Exception as e:
             print(f"Error reloading data: {str(e)}")
         print(f"Program by {AUTHOR_NAME}".center(80))

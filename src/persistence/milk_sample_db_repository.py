@@ -19,7 +19,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 import sqlite3
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Tuple
 from src.model.milk_sample_record import MilkSampleRecord
 from src.persistence.database_config import DatabaseConfig
 
@@ -159,7 +159,7 @@ class MilkSampleDBRepository:
             print(f"Error reading milk sample record: {e}")
             raise
     
-    def read_all_samples(self, limit: Optional[int] = None, offset: int = 0) -> List[MilkSampleRecord]:
+    def read_all_samples(self, limit: Optional[int] = None, offset: int = 0) -> List[Tuple[int, MilkSampleRecord]]:
         """
         Read all milk sample records from the database.
         
@@ -168,7 +168,7 @@ class MilkSampleDBRepository:
             offset (int): Number of records to skip
             
         Returns:
-            List[MilkSampleRecord]: List of milk sample records
+            List[Tuple[int, MilkSampleRecord]]: List of tuples containing (id, record)
             
         Raises:
             sqlite3.Error: If there's an error reading the records
@@ -188,13 +188,32 @@ class MilkSampleDBRepository:
                 
                 records = []
                 for row in rows:
-                    records.append(self._row_to_record(row))
+                    record_id = row['id']
+                    record = self._row_to_record(row)
+                    records.append((record_id, record))
                 
                 print(f"Retrieved {len(records)} milk sample records")
                 return records
         except sqlite3.Error as e:
             print(f"Error reading milk sample records: {e}")
             raise
+    
+    def read_all_samples_simple(self, limit: Optional[int] = None, offset: int = 0) -> List[MilkSampleRecord]:
+        """
+        Read all milk sample records from the database (without IDs).
+        
+        Args:
+            limit (Optional[int]): Maximum number of records to retrieve
+            offset (int): Number of records to skip
+            
+        Returns:
+            List[MilkSampleRecord]: List of milk sample records
+            
+        Raises:
+            sqlite3.Error: If there's an error reading the records
+        """
+        samples_with_ids = self.read_all_samples(limit, offset)
+        return [record for _, record in samples_with_ids]
     
     def read_samples_by_province(self, province: str) -> List[MilkSampleRecord]:
         """

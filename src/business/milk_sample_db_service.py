@@ -83,6 +83,19 @@ class MilkSampleDBService:
         Returns:
             List[MilkSampleRecord]: List of all samples
         """
+        return self.repository.read_all_samples_simple(limit, offset)
+    
+    def get_all_samples_with_ids(self, limit: Optional[int] = None, offset: int = 0) -> List[Tuple[int, MilkSampleRecord]]:
+        """
+        Get all samples from the database with their actual IDs.
+        
+        Args:
+            limit (Optional[int]): Maximum number of records to retrieve
+            offset (int): Number of records to skip
+            
+        Returns:
+            List[Tuple[int, MilkSampleRecord]]: List of tuples containing (id, record)
+        """
         return self.repository.read_all_samples(limit, offset)
     
     def get_samples_by_province(self, province: str) -> List[MilkSampleRecord]:
