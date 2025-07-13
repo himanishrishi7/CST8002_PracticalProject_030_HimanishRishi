@@ -1,7 +1,7 @@
 """
-CST8002 - Practical Project 2
+CST8002 - Practical Project 3
 Professor: Tyler DeLay
-Date: 15/05/2025
+Date: 13/07/2025
 Author: Himanish Rishi
 
 This module contains the MilkSampleDBService class which manages the business logic
@@ -287,7 +287,7 @@ class MilkSampleDBService:
         """
         all_samples = self.repository.read_all_samples()
         provinces = set()
-        for sample in all_samples:
+        for _, sample in all_samples:  # Unpack the tuple (id, record)
             provinces.add(sample.province)
         return sorted(list(provinces))
     
@@ -300,7 +300,7 @@ class MilkSampleDBService:
         """
         all_samples = self.repository.read_all_samples()
         stations = set()
-        for sample in all_samples:
+        for _, sample in all_samples:  # Unpack the tuple (id, record)
             stations.add(sample.station_name)
         return sorted(list(stations))
     
@@ -320,7 +320,7 @@ class MilkSampleDBService:
         total_activity = 0.0
         valid_activity_count = 0
         
-        for sample in all_samples:
+        for _, sample in all_samples:  # Unpack the tuple (id, record)
             provinces.add(sample.province)
             stations.add(sample.station_name)
             if sample.sr90_activity is not None and sample.sr90_activity > 0:

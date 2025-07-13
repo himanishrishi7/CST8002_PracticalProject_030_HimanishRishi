@@ -1,7 +1,7 @@
 """
-CST8002 - Practical Project 2
+CST8002 - Practical Project 3
 Professor: Tyler DeLay
-Date: 15/05/2025
+Date: 13/07/2025
 Author: Himanish Rishi
 
 This module contains the DataMigration class which handles migrating data
@@ -69,26 +69,27 @@ class DataMigration:
                 
                 for row_num, values in enumerate(csv_reader, start=2):
                     total_rows += 1
-                    
+                    # Do not remove empty fields, just strip whitespace
+                    stripped_values = [v.strip() for v in values]
+                    # Only skip if required fields are missing (first 7 columns)
+                    if len(stripped_values) < 7 or any(not stripped_values[i] for i in range(7)):
+                        print(f"Skipping row {row_num}: Missing required values (need first 7 fields non-empty)")
+                        skipped_rows += 1
+                        continue
+                    # Fill missing optional fields with empty string
+                    while len(stripped_values) < 9:
+                        stripped_values.append("")
                     try:
-                        # Clean and validate values
-                        cleaned_values = [v.strip() for v in values if v.strip()]
-                        
-                        if len(cleaned_values) < 9:
-                            print(f"Skipping row {row_num}: Insufficient values (found {len(cleaned_values)}, need 9)")
-                            skipped_rows += 1
-                            continue
-                            
                         record = MilkSampleRecord(
-                            sample_type=cleaned_values[0],
-                            type=cleaned_values[1],
-                            start_date=cleaned_values[2],
-                            stop_date=cleaned_values[3],
-                            station_name=cleaned_values[4],
-                            province=cleaned_values[5],
-                            sr90_activity=cleaned_values[6],
-                            sr90_error=cleaned_values[7],
-                            sr90_activity_per_calcium=cleaned_values[8]
+                            sample_type=stripped_values[0],
+                            type=stripped_values[1],
+                            start_date=stripped_values[2],
+                            stop_date=stripped_values[3],
+                            station_name=stripped_values[4],
+                            province=stripped_values[5],
+                            sr90_activity=stripped_values[6],
+                            sr90_error=stripped_values[7],
+                            sr90_activity_per_calcium=stripped_values[8]
                         )
                         records.append(record)
                     except (ValueError, IndexError) as e:

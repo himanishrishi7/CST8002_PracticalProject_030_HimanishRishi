@@ -1,4 +1,4 @@
 """
-CST8002 - Practical Project 2
+CST8002 - Practical Project 3
 Root package initialization file.
 """ 

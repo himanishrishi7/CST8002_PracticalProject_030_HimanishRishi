@@ -1,5 +1,5 @@
 """
-CST8002 - Practical Project 2
+CST8002 - Practical Project 3
 Model layer package initialization file.
 
 The model layer is responsible for:

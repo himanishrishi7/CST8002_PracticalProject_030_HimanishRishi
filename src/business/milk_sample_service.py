@@ -1,7 +1,7 @@
 """
-CST8002 - Practical Project 2
+CST8002 - Practical Project 3
 Professor: Tyler DeLay
-Date: 15/05/2025
+Date: 13/07/2025
 Author: Himanish Rishi
 
 This module contains the MilkSampleService class which manages the business logic
